@@ -95,12 +95,22 @@ public class MainWindow {
 	    
 	    
 	    Panel infoPanel = new Panel();
-	    
+	    infoPanel.setLayout(new GridLayout(2,1));
+	    AWTProgressBar bar = new AWTProgressBar();
+	    bar.setFocusable(false);
+	    bar.setSize(200, 40);
+	    bar.setMax(100);
+	    bar.setCurrent(50);
+	    infoPanel.add(bar);
 	    
 	    mainFrame.add(fileSelectionPanel);
 	    mainFrame.add(optionsPanel);
 	    mainFrame.add(infoPanel);
-	    mainFrame.setVisible(true); 
+	    
 		
+	}
+	
+	public void show() {
+		mainFrame.setVisible(true);
 	}
 }

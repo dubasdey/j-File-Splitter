@@ -16,12 +16,56 @@
 */
 package org.erc.jfilesplitter;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Panel;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The Class AWTProgressBar.
  */
 public class AWTProgressBar extends Panel{
 
+	/** UUID */
+	private static final long serialVersionUID = -8089019872758585483L;
 	
+	@Getter
+	@Setter
+	private int max=0;
+	
+	@Getter
+	private int current=0;
+	
+
+	public AWTProgressBar() {
+		this.setBackground(Color.GRAY);
+	}
+	
+	public void setCurrent(int current) {
+		this.current = current;
+		if(this.current>max) {
+			this.current = max;
+		}
+		repaint();
+	}
+	
+	@Override
+	public void repaint() {
+		if(max>0) {
+			int perc = (current/max) * 100;
+			int inBoxSize =0;
+			if(perc >0) {
+				inBoxSize = this.getWidth() / perc;
+			}
+			
+			Graphics painter = this.getGraphics();
+			if (painter!=null) {
+				painter.setColor(Color.GREEN);
+				painter.fillRect(0, 0, inBoxSize, this.getHeight());
+			}
+		}
+		super.repaint();
+	}
 }
