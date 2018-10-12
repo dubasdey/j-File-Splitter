@@ -16,20 +16,10 @@
 */
 package org.erc.jfilesplitter;
 
-/**
- * The Class Start.
- */
-public class Start {
-
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		//TODO Command line
-		MainWindow window = new MainWindow();
-		window.show();
-	}
-
+enum SplitMode {
+	BYTES,
+	KBYTES,
+	MBYTES,
+	GBYTES,
+	LINES
 }

@@ -16,20 +16,18 @@
 */
 package org.erc.jfilesplitter;
 
-/**
- * The Class Start.
- */
-public class Start {
+import lombok.Setter;
 
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		//TODO Command line
-		MainWindow window = new MainWindow();
-		window.show();
+class Splitter {
+
+	@Setter
+	private SplitterListener listener;
+	
+	
+	public void split(String filePath,SplitMode mode) {
+		
 	}
-
+	
+	
+	
 }

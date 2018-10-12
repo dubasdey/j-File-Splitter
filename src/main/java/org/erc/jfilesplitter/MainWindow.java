@@ -24,8 +24,15 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  * The Class MainWindow.
@@ -35,11 +42,43 @@ public class MainWindow {
 	/** The main frame. */
 	private Frame mainFrame;
 
+	private TextField fileFile;
+	
+	private AWTProgressBar bar;
+	
+	private Splitter splitter;
+	
+	/**
+	 * File selection
+	 */
+	private void fileSelector() {
+		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int returnVal = fc.showSaveDialog(mainFrame);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+		    try {
+		    	File selectedFolder = fc.getSelectedFile();
+				fileFile.setText(selectedFolder.getCanonicalPath());
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(mainFrame, Messages.getString("MainWindow.bt.file.error.msg"), Messages.getString("MainWindow.bt.file.error.title"),JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		}
+	}
+	
+
 	/**
 	 * Instantiates a new main window.
 	 */
 	public MainWindow() {
-		mainFrame = new Frame("File Splitter");
+		buildUI();
+	}
+	
+	/**
+	 * Build UI
+	 */
+	private void buildUI() {
+		
+		mainFrame = new Frame(Messages.getString("MainWindow.window.title")); //$NON-NLS-1$
 		mainFrame.setSize(500,200);
 		mainFrame.setResizable(false);
 		mainFrame.setLayout(new GridLayout(4, 1));
@@ -55,24 +94,30 @@ public class MainWindow {
 		fileSelectionPanel.setLayout(new FlowLayout());
 		Label msglabel = new Label();
 		msglabel.setAlignment(Label.RIGHT);
-	    msglabel.setText("File");
+	    msglabel.setText(Messages.getString("MainWindow.lb.file")); //$NON-NLS-1$
 	    fileSelectionPanel.add(msglabel);
 	    
-	    TextField fileFile = new TextField();
+	    fileFile = new TextField();
 	    fileFile.setColumns(40);
 	    fileFile.setEditable(false);
 	    fileSelectionPanel.add(fileFile);
 	    
 	    Button pickFile = new Button();
-	    pickFile.setLabel("...");
+	    pickFile.setLabel(Messages.getString("MainWindow.bt.file")); //$NON-NLS-1$
+	    pickFile.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fileSelector();
+			}
+		});
 	    fileSelectionPanel.add(pickFile);
-	    
+	   
 	    // Options panel
-	    
 	    Panel optionsPanel = new Panel();
 	    optionsPanel.setLayout(new FlowLayout());
 	    Label msglabelParts = new Label();
-	    msglabelParts.setText("Part size");
+	    msglabelParts.setText(Messages.getString("MainWindow.lb.parsize")); //$NON-NLS-1$
 	    optionsPanel.add(msglabelParts);
 	    
 	    TextField numberTextBox = new TextField();
@@ -81,22 +126,30 @@ public class MainWindow {
 	    optionsPanel.add(numberTextBox);
 	    
 	    Choice typeSep = new Choice();
-	    typeSep.add("bytes");
-	    typeSep.add("Kilobytes");
-	    typeSep.add("Megabytes");
-	    typeSep.add("Gigabytes");
-	    typeSep.add("Lines");
+	    for (SplitMode mode : SplitMode.values()) {
+	    	typeSep.add(Messages.getString("MainWindow.cmb.type." + mode.name())); //$NON-NLS-1$
+	    }
 	    optionsPanel.add(typeSep);
 	    
-	    
 	    Button startButton = new Button();
-	    startButton.setLabel("Start");
+	    startButton.setLabel(Messages.getString("MainWindow.bt.start")); //$NON-NLS-1$
 	    optionsPanel.add(startButton);
+	    startButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String fileName = fileFile.getText();
+				if(fileName!=null && !fileName.trim().isEmpty()) {
+					SplitMode mode = SplitMode.values()[typeSep.getSelectedIndex()];
+					splitter.split(fileName, mode);
+				}
+				bar.setCurrent(bar.getCurrent()+1);
+			}
+		});
 	    
-	    
+	    // Info Panel
 	    Panel infoPanel = new Panel();
 	    infoPanel.setLayout(new GridLayout(2,1));
-	    AWTProgressBar bar = new AWTProgressBar();
+	    bar = new AWTProgressBar();
 	    bar.setFocusable(false);
 	    bar.setSize(200, 40);
 	    bar.setMax(100);
@@ -107,9 +160,34 @@ public class MainWindow {
 	    mainFrame.add(optionsPanel);
 	    mainFrame.add(infoPanel);
 	    
-		
+	    splitter = new Splitter();
+	    splitter.setListener(new SplitterListener() {
+			
+			@Override
+			public void tick(long currentSize,long totalSize,String currentFileName) {
+				bar.setMax(totalSize);
+				bar.setCurrent(currentSize);
+				//TODO File Name
+			}
+			
+			@Override
+			public void start() {
+				fileSelectionPanel.setEnabled(false);
+				optionsPanel.setEnabled(false);
+			}
+			
+			@Override
+			public void end(int completed) {
+				fileSelectionPanel.setEnabled(true);
+				optionsPanel.setEnabled(true);
+			}
+		});
+	    
 	}
 	
+	/**
+	 * Show
+	 */
 	public void show() {
 		mainFrame.setVisible(true);
 	}

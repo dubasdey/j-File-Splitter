@@ -33,39 +33,36 @@ public class AWTProgressBar extends Panel{
 	
 	@Getter
 	@Setter
-	private int max=0;
+	private double max=0;
 	
 	@Getter
-	private int current=0;
+	private double current=0;
 	
-
 	public AWTProgressBar() {
 		this.setBackground(Color.GRAY);
 	}
 	
-	public void setCurrent(int current) {
+	public void setCurrent(double current) {
 		this.current = current;
 		if(this.current>max) {
 			this.current = max;
 		}
 		repaint();
 	}
-	
+
 	@Override
-	public void repaint() {
+	public void paint(Graphics g) {
 		if(max>0) {
-			int perc = (current/max) * 100;
-			int inBoxSize =0;
+			double perc = (current/max);
+			Double inBoxSize =0D;
 			if(perc >0) {
-				inBoxSize = this.getWidth() / perc;
+				inBoxSize = this.getWidth() * perc;
 			}
-			
-			Graphics painter = this.getGraphics();
-			if (painter!=null) {
-				painter.setColor(Color.GREEN);
-				painter.fillRect(0, 0, inBoxSize, this.getHeight());
-			}
+			g.setColor(Color.GREEN);
+			g.fillRect(0, 0, inBoxSize.intValue(), this.getHeight());
 		}
-		super.repaint();
+		super.paint(g);
 	}
+	
+
 }

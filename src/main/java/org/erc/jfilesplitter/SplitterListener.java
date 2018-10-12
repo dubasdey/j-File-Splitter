@@ -16,20 +16,12 @@
 */
 package org.erc.jfilesplitter;
 
-/**
- * The Class Start.
- */
-public class Start {
+public interface SplitterListener {
 
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		//TODO Command line
-		MainWindow window = new MainWindow();
-		window.show();
-	}
-
+	
+	void start();
+	
+	void tick(long currentSize,long totalSize,String currentFileName);
+	
+	void end(int completed);
 }
